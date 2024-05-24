@@ -37,8 +37,8 @@ VALUES
 
 INSERT INTO owners (name, password)
 VALUES
-    ('user', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i'),
-    ('admin', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i');
+    ('user', '$2a$04$laSFt3sYh79/B8B6JgshV.BmhwteQs2S6y0VLfAlkfaNC1kvpxj/6'),
+    ('admin', '$2a$04$laSFt3sYh79/B8B6JgshV.BmhwteQs2S6y0VLfAlkfaNC1kvpxj/6');
 
 INSERT INTO owners_roles (owner_id, role_id)
 VALUES

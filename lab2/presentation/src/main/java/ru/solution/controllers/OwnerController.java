@@ -1,4 +1,4 @@
-package ru.solution.controller;
+package ru.solution.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +20,12 @@ public class OwnerController {
         return service.findAllOwners();
     }
 
-    @PostMapping("save_owner")
+    @PostMapping("/save_owner")
     public OwnerDto saveOwner(@RequestBody Owner owner) {
         return service.saveOwner(owner);
     }
 
-    @PostMapping("save_owners")
+    @PostMapping("/save_owners")
     public List<OwnerDto> saveOwners(@RequestBody List<Owner> owners) {
         return owners.stream()
                 .map(service::saveOwner)
@@ -38,12 +38,12 @@ public class OwnerController {
         return service.findOwner(id);
     }
 
-    @PutMapping("update_owner")
+    @PutMapping("/update_owner")
     public OwnerDto updateOwner(@RequestBody Owner owner) {
         return service.updateOwner(owner);
     }
 
-    @DeleteMapping("delete_owner/{id}")
+    @DeleteMapping("/delete_owner/{id}")
     public void deleteOwner(@PathVariable("id") Long id) {
         service.deleteOwner(id);
     }

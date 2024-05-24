@@ -1,4 +1,4 @@
-package ru.solution.controller;
+package ru.solution.controllers;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +25,12 @@ public class CatController {
         return service.findAllCats();
     }
 
-    @PostMapping("save_cat")
+    @PostMapping("/save_cat")
     public CatDto saveCat(@RequestBody Cat cat) {
         return service.saveCat(cat);
     }
 
-    @PostMapping("save_cats")
+    @PostMapping("/save_cats")
     public List<CatDto> saveCats(@RequestBody List<Cat> cats) {
         return cats.stream()
                 .map(service::saveCat)
@@ -42,14 +42,14 @@ public class CatController {
         return service.findCat(id);
     }
 
-    @PutMapping("update_cat")
+    @PutMapping("/update_cat")
     public CatDto updateCat(@RequestBody Cat cat) {
         return service.updateCat(cat);
     }
 
-    @DeleteMapping("delete_cat/{catId}")
-    public String deleteCat(@PathVariable("catId") Long catId) {
-        return service.deleteCat(catId);
+    @DeleteMapping("/delete_cat/{id}")
+    public String deleteCat(@PathVariable("id") Long id) {
+        return service.deleteCat(id);
     }
 
     @GetMapping("/color/{color}")
@@ -57,9 +57,9 @@ public class CatController {
         return service.findCatsByColor(color);
     }
 
-    @GetMapping("/owner/{ownerId}")
-    public List<CatDto> findCatsByOwner(@PathVariable("ownerId") Long ownerId) {
-        return service.findCatsByOwner(ownerId);
+    @GetMapping("/owner/{id}")
+    public List<CatDto> findCatsByOwner(@PathVariable("id") Long id) {
+        return service.findCatsByOwner(id);
     }
 
     @PutMapping("/set_owner")

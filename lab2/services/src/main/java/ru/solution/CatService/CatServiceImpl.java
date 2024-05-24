@@ -1,12 +1,14 @@
 package ru.solution.CatService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.solution.repository.CatRepository;
 import ru.solution.dtos.CatDto;
 import ru.solution.dtos.EntityToDtoMapper;
 import ru.solution.models.Cat;
 import ru.solution.models.Owner;
+import ru.solution.repository.CatRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +21,22 @@ public class CatServiceImpl implements CatService {
 
     @Override
     public List<CatDto> findAllCats() {
-        return catRepository.findAll().stream()
-                .map(EntityToDtoMapper::toCatDto)
-                .collect(Collectors.toList());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return catRepository.findAll().stream().map(EntityToDtoMapper::toCatDto).collect(Collectors.toList());
+        } else {
+            return catRepository.findByOwnerName(username).stream().map(EntityToDtoMapper::toCatDto).collect(Collectors.toList());
+        }
     }
 
     @Override

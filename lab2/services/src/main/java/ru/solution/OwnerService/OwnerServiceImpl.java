@@ -1,20 +1,31 @@
 package ru.solution.OwnerService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.solution.repository.OwnerRepository;
+import ru.solution.RoleService.RoleService;
 import ru.solution.dtos.EntityToDtoMapper;
 import ru.solution.dtos.OwnerDto;
+import ru.solution.dtos.RegistrationOwnerDto;
 import ru.solution.models.Owner;
+import ru.solution.repository.OwnerRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
-    @Autowired
-    private OwnerRepository ownerRepository;
+    private final OwnerRepository ownerRepository;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public List<OwnerDto> findAllOwners() {
@@ -42,8 +53,32 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public void deleteOwner(long id) {
         Optional<Owner> optionalOwner = ownerRepository.findById(id);
-        if (optionalOwner.isPresent()) {
-            ownerRepository.delete(optionalOwner.get());
-        }
+        optionalOwner.ifPresent(ownerRepository::delete);
+    }
+
+    public Optional<Owner> findByName(String name) {
+        return ownerRepository.findByName(name);
+    }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Owner owner = findByName(username).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Owner '%s' not found", username)
+        ));
+
+        return new User(
+                owner.getName(),
+                owner.getPassword(),
+                owner.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
+        );
+    }
+
+    public Owner createNewOwner(RegistrationOwnerDto registrationOwnerDto) {
+        Owner owner = new Owner();
+        owner.setName(registrationOwnerDto.getName());
+        owner.setPassword(passwordEncoder.encode(registrationOwnerDto.getPassword()));
+        owner.setRoles(List.of(roleService.getUserRole()));
+        return ownerRepository.save(owner);
     }
 }
